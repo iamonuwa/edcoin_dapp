@@ -16,6 +16,9 @@ export default function StakeForm() {
   );
   return (
     <Container>
+      <Row className="justify-content-md-center py-4 text-center">
+        <b>Unstake Edcoin</b>
+      </Row>
       <Row className="justify-content-md-center">
         <Col xs sm md={3}>
           <Form className="py-4 text-center">

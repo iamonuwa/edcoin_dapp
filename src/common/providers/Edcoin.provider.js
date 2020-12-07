@@ -29,6 +29,7 @@ const initialState = () => ({
   totalEdcoin: 0,
   yourEDCBalance: 0,
   yourStakedEDCBalance: 0,
+  pendingRewards: 0,
 });
 
 const LOAD_CONTRACT = 'web3/LOAD_CONTRACT';

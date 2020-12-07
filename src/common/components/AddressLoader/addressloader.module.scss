@@ -21,12 +21,3 @@
   border-radius: calculateRem(20);
   margin: 0 calculateRem(10);
 }
-
-@media (max-width: $desktop) {
-  .address {
-    .avatar {
-      width: 10px !important;
-      height: 30px !important;
-    }
-  }
-}

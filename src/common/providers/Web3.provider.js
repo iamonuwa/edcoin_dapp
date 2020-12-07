@@ -128,11 +128,16 @@ export const useWeb3 = () => {
     });
 
     provider.on('accountsChanged', (accounts) => {
-      console.log(accounts);
+      update({
+        web3: web3,
+        address: accounts[0],
+      });
     });
 
     // Subscribe to provider disconnection
-    provider.on('disconnect', (error) => {});
+    provider.on('disconnect', (error) => {
+      update({ web3: null, balance: 0, address: null });
+    });
 
     update({
       web3: web3Provider,
