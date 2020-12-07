@@ -1,0 +1,70 @@
+$id-primary: #023750;
+
+.wallet-connect-action {
+  background-image: url('https://app.mantradao.com/static/media/WalletIllustration.80e6c292.png');
+  background-size: cover;
+  background-position: bottom;
+  height: 165px;
+  align-items: baseline !important;
+}
+
+.staking-bottom {
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  background-color: #023750;
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    font-size: 16px;
+  }
+  .curr-details {
+    display: flex;
+    align-items: center;
+
+    &_name {
+      color: #ffffff;
+    }
+    &_value {
+      color: #ffffff;
+      margin-right: 8px;
+    }
+  }
+}
+
+.staking-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .jc-sb {
+    justify-content: space-between;
+  }
+
+  span {
+    font-size: 16px;
+    color: $id-primary;
+  }
+
+  .curr-details {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 5px;
+
+    &_img {
+      margin: 5px;
+      margin-right: 12px;
+    }
+
+    &_name {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+
+    &_value {
+      font-size: 16px;
+    }
+  }
+}

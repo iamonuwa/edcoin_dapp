@@ -1,0 +1,14 @@
+@import 'base';
+@import 'colors';
+
+$font: 'Inter';
+$base-font-size: 16;
+$desktop: 830px;
+
+$dashboard-header-height: 70px;
+$dashboard-footer-height: 70px;
+$dashboard-nav-width: 130px;
+
+@import 'functions';
+@import 'buttons';
+@import 'layout';

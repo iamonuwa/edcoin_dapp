@@ -1,0 +1,69 @@
+$purple: #887af9;
+$orange: #fe8f59;
+$blue: #51d0f0;
+$pink: #d37ef4;
+$green: #7cda00;
+$red: #fa6565;
+$yellow: #ffca0f;
+$metamask: #f6851b;
+
+$purple-bg: rgba(
+  $color: $purple,
+  $alpha: 0.15,
+);
+
+$orange-bg: rgba(
+  $color: $orange,
+  $alpha: 0.15,
+);
+
+$yellow-bg: rgba(
+  $color: $yellow,
+  $alpha: 0.15,
+);
+
+$pink-bg: rgba(
+  $color: $pink,
+  $alpha: 0.15,
+);
+
+$blue-bg: rgba(
+  $color: $blue,
+  $alpha: 0.15,
+);
+
+$green-bg: rgba(
+  $color: $green,
+  $alpha: 0.15,
+);
+
+$red-bg: rgba(
+  $color: $red,
+  $alpha: 0.15,
+);
+
+$link-color: #4360df;
+$text-color: #ffffff;
+$headline-color: #000000;
+$background: #818384;
+$sub-background: #2d2d2d;
+
+.card__light_orange {
+  background: $orange-bg;
+}
+
+.card__light_blue {
+  background: $blue-bg;
+}
+
+.card__light_pink {
+  background: $pink-bg;
+}
+
+.card__light_purple {
+  background: $purple-bg;
+}
+
+.card__white {
+  background: $text-color;
+}

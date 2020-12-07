@@ -3,13 +3,37 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@makerdao/multicall": "^0.12.0",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@myetherwallet/mewconnect-web-client": "^2.1.16",
+    "@portis/web3": "^2.0.0-beta.59",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@toruslabs/torus-embed": "^1.9.0",
+    "@unilogin/provider": "^0.6.1",
+    "@walletconnect/web3-provider": "^1.3.1",
+    "authereum": "^0.1.0",
+    "bootstrap": "^4.5.3",
+    "clsx": "^1.1.1",
+    "ethers": "^5.0.23",
+    "fortmatic": "^2.2.1",
+    "jquery": "^3.4.1",
+    "node-sass": "4.14.1",
+    "popper.js": "^1.16.0",
     "react": "^17.0.1",
+    "react-bootstrap": "^1.4.0",
+    "react-cool-tabs": "^1.1.6",
     "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "web-vitals": "^0.2.4"
+    "squarelink": "^1.1.4",
+    "web-vitals": "^0.2.4",
+    "web3": "^1.2.11",
+    "web3-eth-contract": "^1.3.0",
+    "web3-utils": "^1.3.0",
+    "web3modal": "^1.9.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -34,5 +58,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
   }
 }
