@@ -6,6 +6,8 @@ import UnStakeForm from './UnStakeForm';
 import Reward from './Reward';
 import { useContract } from '../../common/providers/Edcoin.provider';
 
+import { toEther, toBN } from '../../common/utils';
+
 export default function Staking() {
   const [contractState] = useContract();
   return (
@@ -14,25 +16,29 @@ export default function Staking() {
         <Row>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{contractState.totalEdcoin}</Card.Body>
+              <Card.Body>{toEther(toBN(contractState.totalEdcoin))}</Card.Body>
               <Card.Footer>Total Edcoin</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{contractState.totalStakes}</Card.Body>
+              <Card.Body>{toEther(toBN(contractState.totalStakes))}</Card.Body>
               <Card.Footer>Total Edcoin Staked</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{contractState.yourEDCBalance}</Card.Body>
+              <Card.Body>
+                {toEther(toBN(contractState.yourEDCBalance))}
+              </Card.Body>
               <Card.Footer>Your Edcoin Balance</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{contractState.yourStakedEDCBalance}</Card.Body>
+              <Card.Body>
+                {toEther(toBN(contractState.yourStakedEDCBalance))}
+              </Card.Body>
               <Card.Footer>Your Staked Edcoin</Card.Footer>
             </Card>
           </Col>

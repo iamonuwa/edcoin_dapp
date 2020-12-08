@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, NavLink, Route, Switch } from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 
 import Staking from './Staking';
 
@@ -9,6 +9,8 @@ import { AddressLoader } from '../common/components/AddressLoader';
 
 import { useWeb3 } from '../common/providers/Web3.provider';
 import { useContract } from '../common/providers/Edcoin.provider';
+
+import Logo from '../common/assets/logo.png';
 
 export default function Layout() {
   const [userState, login] = useWeb3();
@@ -26,7 +28,9 @@ export default function Layout() {
       <div className={styles.container}>
         <header className={styles.container__header}>
           <Link to="/">
-            <div className={styles.logo}>logo</div>
+            <div className={styles.logo}>
+              <img src={Logo} alt="Edcoin Logo" width={70} height={70} />
+            </div>
           </Link>
           <div className={styles.toolbar}>
             {userState.address ? (

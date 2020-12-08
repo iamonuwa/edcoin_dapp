@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   createContext,
   useContext,
@@ -18,6 +19,7 @@ import { useWeb3 } from './Web3.provider';
 import { toBN, toWei } from '../utils';
 
 import * as EdcoinStake from '../../contracts/EdcoinStake.json';
+import * as EdcoinToken from '../../contracts/Edcoin.json';
 
 const ModalContext = createContext();
 
@@ -25,6 +27,7 @@ const useModalContext = () => useContext(ModalContext);
 
 const initialState = () => ({
   contract: null,
+  edcoinContract: null,
   totalStakes: 0,
   totalEdcoin: 0,
   yourEDCBalance: 0,
@@ -77,52 +80,47 @@ export const useContract = () => {
     if (window.web3) login();
   }, []);
 
-  const multiCallConfig = useMemo(
-    () => ({
-      web3,
-      multicallAddress: '0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821',
-      interval: 10000,
-    }),
-    [web3]
-  );
+  // const multiCallConfig = useMemo(
+  //   () => ({
+  //     web3,
+  //     multicallAddress: '0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821',
+  //     interval: 10000,
+  //   }),
+  //   [web3]
+  // );
 
-  useEffect(() => {
-    if (!web3) return;
+  // useEffect(() => {
+  //   if (!web3) return;
 
-    const contract = new web3.eth.Contract(
-      EdcoinStake.abi,
-      EDCOIN_STAKING_CONTRACT_ADDRESS
-    );
+  //   defaultWatcher.stop();
 
-    defaultWatcher.stop();
+  //   defaultWatcher.recreate(
+  //     [
+  //       {
+  //         target: EDCOIN_CONTRACT_ADDRESS,
+  //         call: ['totalSupply()(uint256)'],
+  //         returns: [['totalEDC']],
+  //       },
+  //       {
+  //         target: EDCOIN_STAKING_CONTRACT_ADDRESS,
+  //         call: ['totalStakes()(uint256)'],
+  //         returns: [['totalStakes']],
+  //       },
+  //       {
+  //         target: EDCOIN_STAKING_CONTRACT_ADDRESS,
+  //         call: ['totalStakers()(uint256)'],
+  //         returns: [['totalStakers']],
+  //       },
+  //     ],
+  //     multiCallConfig
+  //   );
 
-    defaultWatcher.recreate(
-      [
-        {
-          target: EDCOIN_CONTRACT_ADDRESS,
-          call: ['totalSupply()(uint256)'],
-          returns: [['totalEDC']],
-        },
-        {
-          target: EDCOIN_STAKING_CONTRACT_ADDRESS,
-          call: ['totalStaked()(uint256)'],
-          returns: [['totalStaked']],
-        },
-        {
-          target: EDCOIN_STAKING_CONTRACT_ADDRESS,
-          call: ['totalStakers()(uint256)'],
-          returns: [['totalStakers']],
-        },
-      ],
-      multiCallConfig
-    );
+  //   defaultWatcher.subscribe((payload) => {
+  //     console.log(payload);
+  //   });
 
-    defaultWatcher.subscribe((payload) => {
-      console.log(payload);
-    });
-
-    defaultWatcher.start();
-  }, [multiCallConfig, web3]);
+  //   defaultWatcher.start();
+  // }, [multiCallConfig, web3]);
 
   const loadContract = async () => {
     if (web3) {
@@ -131,10 +129,15 @@ export const useContract = () => {
         EDCOIN_STAKING_CONTRACT_ADDRESS
       );
 
-      console.log(await contract.methods.yourEDCBalance(address).call());
+      const edcoinContract = new web3.eth.Contract(
+        EdcoinToken.abi,
+        EDCOIN_CONTRACT_ADDRESS
+      );
 
       update({
         contract,
+        edcoinContract,
+        totalEdcoin: await edcoinContract.methods.totalSupply().call(),
         totalStakes: await contract.methods.totalStakes().call(),
         yourEDCBalance: await contract.methods.yourEDCBalance(address).call(),
         yourStakedEDCBalance: await contract.methods
@@ -144,8 +147,19 @@ export const useContract = () => {
     }
   };
 
+  const approveToken = async (amount) => {
+    const contract = new web3.eth.Contract(
+      EdcoinToken.abi,
+      EDCOIN_CONTRACT_ADDRESS
+    );
+    return contract.methods
+      .approve(EDCOIN_STAKING_CONTRACT_ADDRESS, amount)
+      .send({ from: address });
+  };
+
   const stakeEdcoin = async (amount) => {
     const totalAmount = toBN(toWei(amount || '0'));
+    await approveToken(totalAmount);
     await state.contract.methods.STAKE(totalAmount).send({ from: address });
   };
 
@@ -153,5 +167,5 @@ export const useContract = () => {
     await state.contract.methods.CLAIMREWARD().send({ from: address });
   };
 
-  return [state, loadContract, stakeEdcoin, withdrawRewards];
+  return [state, loadContract, stakeEdcoin, withdrawRewards, approveToken];
 };
