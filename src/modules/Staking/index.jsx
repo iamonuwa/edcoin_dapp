@@ -4,9 +4,10 @@ import { Card, Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import StakeForm from './StakeForm';
 import UnStakeForm from './UnStakeForm';
 import Reward from './Reward';
+import Referral from './Referral';
 import { useContract } from '../../common/providers/Edcoin.provider';
 
-import { toEther, toBN } from '../../common/utils';
+import { toEther, toBN, formatNumber } from '../../common/utils';
 
 export default function Staking() {
   const [contractState] = useContract();
@@ -16,30 +17,50 @@ export default function Staking() {
         <Row>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{toEther(toBN(contractState.totalEdcoin))}</Card.Body>
+              <Card.Body>
+                <b>
+                  {formatNumber.format(
+                    toEther(toBN(contractState.totalEdcoin))
+                  )}
+                </b>
+              </Card.Body>
               <Card.Footer>Total Edcoin</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
-              <Card.Body>{toEther(toBN(contractState.totalStakes))}</Card.Body>
+              <Card.Body>
+                <b>
+                  {formatNumber.format(
+                    toEther(toBN(contractState.totalStaked))
+                  )}
+                </b>
+              </Card.Body>
               <Card.Footer>Total Edcoin Staked</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
               <Card.Body>
-                {toEther(toBN(contractState.yourEDCBalance))}
+                <b>
+                  {formatNumber.format(
+                    toEther(toBN(contractState.accountEdcoinStaked))
+                  )}
+                </b>
               </Card.Body>
-              <Card.Footer>Your Edcoin Balance</Card.Footer>
+              <Card.Footer>Your Staked Edcoin</Card.Footer>
             </Card>
           </Col>
           <Col xs={12} sm={12} md={3} lg={3}>
             <Card>
               <Card.Body>
-                {toEther(toBN(contractState.yourStakedEDCBalance))}
+                <b>
+                  {formatNumber.format(
+                    toEther(toBN(contractState.accountBalance))
+                  )}
+                </b>
               </Card.Body>
-              <Card.Footer>Your Staked Edcoin</Card.Footer>
+              <Card.Footer>Your Edcoin Balance</Card.Footer>
             </Card>
           </Col>
         </Row>
@@ -54,6 +75,9 @@ export default function Staking() {
           </Tab>
           <Tab eventKey="rewards" title="Rewards">
             <Reward />
+          </Tab>
+          <Tab eventKey="referrals" title="Referrals">
+            <Referral />
           </Tab>
         </Tabs>
       </Container>

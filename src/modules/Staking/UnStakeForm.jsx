@@ -5,14 +5,14 @@ import { useContract } from '../../common/providers/Edcoin.provider';
 export default function StakeForm() {
   const [state, setState] = React.useState(0);
 
-  const [, , stakeEdcoin] = useContract();
+  const [, , , unStakeEdcoin] = useContract();
 
   const handleUnStake = React.useCallback(
     (e) => {
       e.preventDefault();
-      stakeEdcoin(state);
+      unStakeEdcoin(state);
     },
-    [stakeEdcoin, state]
+    [unStakeEdcoin, state]
   );
   return (
     <Container>
@@ -30,7 +30,11 @@ export default function StakeForm() {
               />
             </Form.Group>
 
-            <Button onClick={handleUnStake} variant="primary" type="submit">
+            <Button
+              onClick={handleUnStake}
+              variant="outline-primary"
+              type="submit"
+            >
               Unstake
             </Button>
           </Form>
