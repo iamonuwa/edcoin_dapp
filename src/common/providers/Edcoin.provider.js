@@ -131,7 +131,7 @@ export const useContract = () => {
     }
 
     if (requestBN.gt(toBN(state.accountBalance))) {
-      alert('Cannot stake more LID than is in your account.');
+      alert('Cannot stake more Edcoin than is in your account.');
       return;
     }
 
@@ -162,9 +162,10 @@ export const useContract = () => {
       return;
     }
     if (requestBN.gt(toBN(state.accountEdcoinStaked))) {
-      alert('Cannot unstake more LID than you have staked.');
+      alert('Cannot unstake more Edcoin than you have staked.');
       return;
     }
+    console.log(state.contract.methods);
     await state.contract.methods
       .unstake(requestBN.toString())
       .send({ from: address });
