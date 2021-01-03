@@ -25,11 +25,6 @@ export default function Reward() {
               Withdraw
             </Button>
           </div>
-          <div>
-            <Button onClick={reInvest} variant="outline-primary" type="submit">
-              Re-invest
-            </Button>
-          </div>
         </Col>
       </Row>
     </Container>

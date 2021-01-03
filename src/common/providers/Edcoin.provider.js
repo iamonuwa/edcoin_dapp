@@ -90,15 +90,19 @@ export const useContract = () => {
         EDCOIN_CONTRACT_ADDRESS
       );
 
+      console.log(contract.methods);
+      // await edcoinContract.methods.unpause().send({ from: address });
       update({
         contract,
         edcoinContract,
-        isRegistered: await contract.methods.stakerIsRegistered(address).call(),
+        isRegistered: await contract.methods.registered(address).call(),
         totalEdcoin: await edcoinContract.methods.totalSupply().call(),
         totalStaked: await contract.methods.totalStaked().call(),
-        accountEdcoinStaked: await contract.methods.stakeValue(address).call(),
+        accountEdcoinStaked: await contract.methods.stakes(address).call(),
         accountBalance: await edcoinContract.methods.balanceOf(address).call(),
-        accountDividends: await contract.methods.dividendsOf(address).call(),
+        accountDividends: await contract.methods
+          .calculateEarnings(address)
+          .call(),
       });
     }
   };
@@ -165,7 +169,7 @@ export const useContract = () => {
       alert('Cannot unstake more Edcoin than you have staked.');
       return;
     }
-    console.log(state.contract.methods);
+    await approveToken(requestBN.toString());
     await state.contract.methods
       .unstake(requestBN.toString())
       .send({ from: address });
@@ -184,9 +188,7 @@ export const useContract = () => {
       alert('Must have at least 1 Edcoin in dividends.');
       return;
     }
-    await state.contract.methods
-      .withdraw(requestBN.toString())
-      .send({ from: address });
+    await state.contract.methods.withdrawEarnings().send({ from: address });
     alert(
       'Unstake request sent. Check your wallet to see when it has completed, then refresh this page.'
     );
