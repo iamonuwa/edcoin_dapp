@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 
 import Logo from 'components/Logo';
+import { DarkModeSwitch } from 'components/DarkModeSwitch';
 
 const NavBar = (props: FlexProps) => {
   const { colorMode } = useColorMode();
@@ -103,23 +104,26 @@ const MenuLinks = ({ isOpen }: { isOpen: boolean }) => {
         direction={['column', 'row', 'row', 'row']}
         pt={[4, 4, 0, 0]}
       >
-        <MenuItem to="/">Home</MenuItem>
-        <MenuItem to="/how">How It works </MenuItem>
-        <MenuItem to="/faetures">Features </MenuItem>
-        <MenuItem to="/pricing">Pricing </MenuItem>
-        <MenuItem to="/signup" isLast>
-          <Button
-            size="sm"
-            rounded="md"
-            color={['primary.500', 'primary.500', 'white', 'white']}
-            bg={['white', 'white', 'primary.500', 'primary.500']}
-            _hover={{
-              bg: ['primary.100', 'primary.100', 'primary.600', 'primary.600'],
-            }}
-          >
-            Create Account
-          </Button>
-        </MenuItem>
+        <>
+          <MenuItem to="/">Stake</MenuItem>
+        </>
+        <>
+          <MenuItem to="/signup" isLast>
+            <Button
+              size="sm"
+              rounded="md"
+              color={['primary.500', 'primary.500', 'white', 'white']}
+              bg={['white', 'white', 'blue.500', 'blue.500']}
+              _hover={{
+                textDecoration: 'none',
+                bg: ['blue.100', 'blue.100', 'blue.600', 'blue.600'],
+              }}
+            >
+              Connect wallet
+            </Button>
+          </MenuItem>
+          <DarkModeSwitch />
+        </>
       </Stack>
     </Box>
   );
@@ -143,7 +147,7 @@ const NavBarContainer = ({
       justify="space-between"
       wrap="wrap"
       w="100%"
-      p={8}
+      p={[4, 4, 8, 8]}
       bg={bgColor[colorMode]}
       color={color[colorMode]}
       {...props}
