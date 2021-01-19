@@ -10,8 +10,8 @@ export const DarkModeSwitch = () => {
       cursor="pointer"
       {...props}
       color="white"
-      width="30"
-      height="30"
+      width="20"
+      height="20"
       viewBox="0 0 30 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -67,8 +67,8 @@ export const DarkModeSwitch = () => {
       cursor="pointer"
       {...props}
       color="black"
-      width="20"
-      height="20"
+      width="15"
+      height="15"
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

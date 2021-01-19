@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Stack,
@@ -6,12 +6,57 @@ import {
   FlexProps,
   Text,
   Heading,
-  useColorMode,
+  Button,
+  useClipboard,
 } from '@chakra-ui/react';
+import EdcoinStakingContract from 'services/stake';
+import { useActiveWeb3React } from 'hooks/useWeb3';
+import Edcoin from 'services/edcoin';
 
 export const StatsGrid = ({ ...rest }: FlexProps) => {
-  const { colorMode } = useColorMode();
-  const color = { light: 'black', dark: 'white' };
+  const [stake, setStake] = useState<{
+    totalStaked: string;
+    totalStakes: string;
+    totalEdcoin: string;
+    totalReferrals: string;
+  }>({
+    totalStaked: '0',
+    totalStakes: '0',
+    totalEdcoin: '0',
+    totalReferrals: '0',
+  });
+  const { account } = useActiveWeb3React();
+
+  const siteUrl: string =
+    typeof window !== 'undefined' ? window.location.origin : '';
+
+  const referralCode = `${siteUrl}?referrer=${account}`;
+  const { onCopy } = useClipboard(referralCode.toString());
+
+  useEffect(() => {
+    const stakeContract = new EdcoinStakingContract();
+    const edcoinContract = new Edcoin();
+    let totalStaked: string = '0';
+    let totalEdcoin: string = '0';
+    let totalStakes: string = '0';
+    let totalReferrals: string = '0';
+    const loadContract = async () => {
+      totalStaked = (await stakeContract.getTotalStaked()) as string;
+      totalEdcoin = (await edcoinContract.getSupply()) as string;
+      console.log('total edcoin', totalEdcoin);
+      if (account) {
+        totalStakes = await stakeContract.countStakes(account);
+        totalReferrals = await stakeContract.getReferrals(account);
+      }
+      setStake({
+        totalEdcoin,
+        totalStaked,
+        totalStakes,
+        totalReferrals,
+      });
+    };
+    loadContract();
+  }, [account]);
   return (
     <Flex wrap="nowrap" mt={100} {...rest}>
       <Stack
@@ -31,21 +76,22 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
             m={{ base: 1, md: 4 }}
             rounded="lg"
             bgColor="red"
-            borderWidth={1}
-            width={300}
+            minWidth={300}
             height={150}
-            color={color[colorMode]}
+            color="white"
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
-              0
+              {stake.totalEdcoin}
             </Text>
             <Heading
-              p={{ base: 0, md: 6 }}
-              textAlign={{ base: 'center', md: 'left' }}
+              pt={8}
+              px={8}
+              pb={4}
+              textAlign={{ base: 'left', md: 'left' }}
               as="h3"
               size="sm"
-              mb="2"
             >
               Total Edcoin
             </Heading>
@@ -53,21 +99,22 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
           <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
-            borderWidth={1}
             height={150}
-            width={300}
-            color={color[colorMode]}
+            minWidth={300}
+            color="white"
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
-              0
+              {stake.totalStaked}
             </Text>
             <Heading
-              p={{ base: 0, md: 6 }}
-              textAlign={{ base: 'center', md: 'left' }}
+              pt={8}
+              px={8}
+              pb={4}
+              textAlign={{ base: 'left', md: 'left' }}
               as="h3"
               size="sm"
-              mb="2"
             >
               Total Edcoin Staked
             </Heading>
@@ -75,26 +122,27 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
           <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
-            borderWidth={1}
             height={150}
-            width={300}
-            color={color[colorMode]}
+            minWidth={300}
+            color="white"
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
-              0
+              {stake.totalStakes}
             </Text>
             <Heading
-              p={{ base: 0, md: 6 }}
-              textAlign={{ base: 'center', md: 'left' }}
+              pt={8}
+              px={8}
+              pb={4}
+              textAlign={{ base: 'left', md: 'left' }}
               as="h3"
               size="sm"
-              mb="2"
             >
               Your staked Edcoin
             </Heading>
           </Box>
-          <Box
+          {/* <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
             borderWidth={1}
@@ -116,27 +164,39 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
               Your Edcoin balance
             </Heading>
           </Box>
+           */}
           <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
             borderWidth={1}
             height={150}
-            width={300}
-            color={color[colorMode]}
+            minWidth={300}
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            color="white"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
-              0
+              {stake.totalReferrals}
             </Text>
-            <Heading
-              p={{ base: 0, md: 6 }}
-              textAlign={{ base: 'center', md: 'left' }}
-              as="h3"
-              size="sm"
+            <Flex
+              pt={8}
+              px={8}
+              pb={4}
+              align="center"
               mb="2"
+              justify="space-between"
             >
-              Referrals
-            </Heading>
+              <Heading
+                textAlign={{ base: 'left', md: 'left' }}
+                as="h3"
+                size="sm"
+              >
+                Referrals
+              </Heading>
+              <Button variant="outline" onClick={() => onCopy()} size="xs">
+                Copy Referral Link
+              </Button>
+            </Flex>
           </Box>
         </Flex>
       </Stack>

@@ -6,6 +6,7 @@ import { StatsGrid } from 'components/Sections/Stats';
 
 const Index = () => (
   <Container minHeight="100vh">
+    <title>Edcoin - Stake</title>
     <StatsGrid />
     <StakeFeatures />
   </Container>

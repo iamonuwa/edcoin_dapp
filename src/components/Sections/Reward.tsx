@@ -1,6 +1,38 @@
-import { Text } from '@chakra-ui/react';
-import React from 'react';
+import { Text, Box, Flex, Button } from '@chakra-ui/react';
+import React, { useCallback } from 'react';
+import EdcoinStakingContract from 'services/stake';
 
-export const Reward = () => {
-  return <Text>Reward</Text>;
+type Props = {
+  account: string | null | undefined;
+  amount: number | string;
+};
+
+export const Reward = ({ account, amount }: Props) => {
+  const handleReward = useCallback(async () => {
+    const edcoinStakingContract = new EdcoinStakingContract();
+    if (Number(amount) > 0) {
+      await edcoinStakingContract.withdraw(account);
+    }
+  }, []);
+  return (
+    <Flex
+      my={{ base: 0, md: 10 }}
+      alignItems="center"
+      justify={{ base: 'flex-start', md: 'center' }}
+    >
+      <Box
+        mr={{ base: 0, md: 10 }}
+        alignContent="center"
+        justifyContent="center"
+      >
+        <Text textAlign="center" fontSize="3xl">
+          {amount}
+        </Text>
+        <Text>Pending Rewards</Text>
+      </Box>
+      <Button size="sm" variant="outline" onClick={handleReward}>
+        Claim Reward
+      </Button>
+    </Flex>
+  );
 };

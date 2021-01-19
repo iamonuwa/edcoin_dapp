@@ -1,4 +1,4 @@
-import { Link as ChakraLink, Button, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 
 import { Container } from 'components/Container';
 import { Footer } from './Footer';

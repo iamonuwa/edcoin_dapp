@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
   Box,
@@ -8,14 +8,20 @@ import {
   Stack,
   FlexProps,
   useColorMode,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 import Logo from 'components/Logo';
 import { DarkModeSwitch } from 'components/DarkModeSwitch';
+import { useActiveWeb3React } from 'hooks/useWeb3';
+import { WalletModal } from 'components/Wallet';
+import { shortenAddress } from 'utils';
+import Edcoin from 'services/edcoin';
 
 const NavBar = (props: FlexProps) => {
   const { colorMode } = useColorMode();
   const color = { light: 'black', dark: 'white' };
+  const textColor = { light: 'white', dark: 'black' };
 
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -26,6 +32,11 @@ const NavBar = (props: FlexProps) => {
       <Logo w="100px" color={color[colorMode]} />
       <MenuToggle color={color[colorMode]} toggle={toggle} isOpen={isOpen} />
       <MenuLinks isOpen={isOpen} />
+      <MenuCTA
+        isOpen={isOpen}
+        textColor={textColor[colorMode]}
+        backgroundColor={color[colorMode]}
+      />
     </NavBarContainer>
   );
 };
@@ -104,12 +115,112 @@ const MenuLinks = ({ isOpen }: { isOpen: boolean }) => {
         direction={['column', 'row', 'row', 'row']}
         pt={[4, 4, 0, 0]}
       >
-        <>
-          <MenuItem to="/">Stake</MenuItem>
-        </>
-        <>
-          <MenuItem to="/signup" isLast>
+        <MenuItem to="/">Stake</MenuItem>
+        <MenuItem to="#">About</MenuItem>
+        <MenuItem to="#">FAQ</MenuItem>
+        <MenuItem to="#">Buy Edcoin →</MenuItem>
+      </Stack>
+    </Box>
+  );
+};
+
+const MenuCTA = ({
+  isOpen,
+  backgroundColor,
+  textColor,
+}: {
+  isOpen: boolean;
+  backgroundColor: string;
+  textColor: string;
+}) => {
+  const { account } = useActiveWeb3React();
+  const [walletState, setWalletState] = useState<string>('');
+  const [balance, setBalance] = useState<{
+    edcoinBalance: number | string;
+    etherBalance: number | string;
+  }>({ edcoinBalance: 0, etherBalance: 0 });
+  const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
+
+  const handleWalletModalOpen = (state: string) => {
+    setWalletState(state);
+    onOpen();
+  };
+
+  useEffect(() => {
+    const edcoinContract = new Edcoin();
+    const loadBalance = async () => {
+      // @ts-ignore
+      if (account) {
+        const edcoinBalance = await edcoinContract.getBalance(account);
+        const etherBalance = await edcoinContract.getEtherBalance(account);
+        setBalance({
+          edcoinBalance: edcoinBalance.toString(),
+          etherBalance: etherBalance.toString(),
+        });
+      }
+    };
+    loadBalance();
+  }, [balance, account]);
+
+  return (
+    <Fragment>
+      <Box
+        display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
+        flexBasis={{ base: '100%', md: 'auto' }}
+      >
+        {account ? (
+          <Stack
+            align="center"
+            justify={['center', 'space-around', 'flex-end', 'flex-end']}
+            direction={['column', 'row', 'row', 'row']}
+            pt={[4, 4, 0, 0]}
+          >
+            <Box
+              cursor="pointer"
+              rounded={5}
+              py={1}
+              bgGradient="linear(to-l, #7928CA, #FF0080)"
+              px={4}
+            >
+              <Text color={textColor} fontWeight={600}>
+                {balance.edcoinBalance} EDC
+              </Text>
+            </Box>
+            <Box
+              cursor="pointer"
+              rounded={5}
+              py={1}
+              px={4}
+              bgColor={backgroundColor}
+            >
+              <Text color={textColor} fontWeight={600}>
+                {balance.etherBalance} ETH
+              </Text>
+            </Box>
+            <Box
+              cursor="pointer"
+              onClick={() => handleWalletModalOpen('wallet')}
+              rounded={5}
+              py={1}
+              px={4}
+              bgColor={backgroundColor}
+            >
+              <Text color={textColor} fontWeight={600}>
+                {shortenAddress(account)}
+              </Text>
+            </Box>
+            <DarkModeSwitch />
+          </Stack>
+        ) : (
+          <Stack
+            spacing={8}
+            align="center"
+            justify={['center', 'space-between', 'flex-end', 'flex-end']}
+            direction={['column', 'row', 'row', 'row']}
+            pt={[4, 4, 0, 0]}
+          >
             <Button
+              onClick={() => handleWalletModalOpen('connect')}
               size="sm"
               rounded="md"
               color={['primary.500', 'primary.500', 'white', 'white']}
@@ -121,11 +232,12 @@ const MenuLinks = ({ isOpen }: { isOpen: boolean }) => {
             >
               Connect wallet
             </Button>
-          </MenuItem>
-          <DarkModeSwitch />
-        </>
-      </Stack>
-    </Box>
+            <DarkModeSwitch />
+          </Stack>
+        )}
+      </Box>
+      <WalletModal state={walletState} isOpen={isModalOpen} onClose={onClose} />
+    </Fragment>
   );
 };
 
@@ -147,7 +259,8 @@ const NavBarContainer = ({
       justify="space-between"
       wrap="wrap"
       w="100%"
-      p={[4, 4, 8, 8]}
+      p={4}
+      zIndex={99}
       bg={bgColor[colorMode]}
       color={color[colorMode]}
       {...props}
