@@ -1,8 +1,12 @@
 import React from 'react';
-
+import dynamic from 'next/dynamic';
 import { Container } from 'components/Container';
-import { StakeFeatures } from 'components/Sections/StakeFeatures';
 import { StatsGrid } from 'components/Sections/Stats';
+
+const StakeFeatures = dynamic(
+  () => import('components/Sections/StakeFeatures'),
+  { ssr: false }
+);
 
 const Index = () => (
   <Container minHeight="100vh">

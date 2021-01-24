@@ -19,18 +19,31 @@ export const network = new NetworkConnector({
   defaultChainId: 1,
 });
 
-export const walletconnect = new WalletConnectConnector({
-  rpc: { 1: RPC_URLS[1] },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-  pollingInterval: POLLING_INTERVAL,
-});
+const newWalletConnect = () =>
+  new WalletConnectConnector({
+    rpc: { 1: RPC_URLS[1] },
+    bridge: 'https://bridge.walletconnect.org',
+    qrcode: true,
+    pollingInterval: POLLING_INTERVAL,
+  });
 
-export const walletlink = new WalletLinkConnector({
-  url: RPC_URLS[1],
-  appName: 'Edcoin Staking',
-});
+const newWalletLink = () =>
+  new WalletLinkConnector({
+    url: RPC_URLS[1],
+    appName: 'Edcoin Staking',
+  });
 
 export const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4],
 });
+
+export let walletconnect = newWalletConnect();
+export let walletlink = newWalletLink();
+
+export const resetWalletConnect = () => {
+  walletconnect = newWalletConnect();
+};
+
+export const resetWalletLink = () => {
+  walletlink = newWalletLink();
+};

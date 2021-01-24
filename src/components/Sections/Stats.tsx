@@ -36,14 +36,14 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
   useEffect(() => {
     const stakeContract = new EdcoinStakingContract();
     const edcoinContract = new Edcoin();
-    let totalStaked: string = '0';
-    let totalEdcoin: string = '0';
-    let totalStakes: string = '0';
-    let totalReferrals: string = '0';
+    let totalStaked = '0';
+    let totalEdcoin = '0';
+    let totalStakes = '0';
+    let totalReferrals = '0';
+
     const loadContract = async () => {
-      totalStaked = (await stakeContract.getTotalStaked()) as string;
-      totalEdcoin = (await edcoinContract.getSupply()) as string;
-      console.log('total edcoin', totalEdcoin);
+      totalStaked = await stakeContract.getTotalStaked();
+      totalEdcoin = await edcoinContract.getSupply();
       if (account) {
         totalStakes = await stakeContract.countStakes(account);
         totalReferrals = await stakeContract.getReferrals(account);
@@ -62,13 +62,11 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
       <Stack
         spacing={4}
         w={{ base: '100vw', md: '100vw', lg: '100vw' }}
-        left="flex-start"
         align="center"
       >
         <Flex
           alignItems="center"
           direction="row"
-          leftContent="space-between"
           maxW={['100vw', '100vw', '100vw', '90vw']}
           overflowX="scroll"
         >
@@ -168,7 +166,6 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
           <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
-            borderWidth={1}
             height={150}
             minWidth={300}
             bgGradient="linear(to-l, #7928CA, #FF0080)"

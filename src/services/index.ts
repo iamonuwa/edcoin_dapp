@@ -7,9 +7,9 @@ export default class Blockchain {
   async init() {
     let web3: any;
     // @ts-ignore
-    if (typeof window.web3 !== 'undefined') {
+    if ('ethereum' in window) {
       // @ts-ignore
-      web3 = new Web3(window.web3.currentProvider);
+      web3 = new Web3(window.ethereum);
     } else {
       web3 = new Web3(
         'https://rinkeby.infura.io/v3/8365ba3a83054a92bac3585c1ecaa139'
@@ -26,9 +26,9 @@ export default class Blockchain {
       ],
     });
 
-    if ('web3' in window || 'ethereum' in window) {
+    if ('ethereum' in window) {
       // @ts-ignore
-      web3.eth.defaultAccount = window.web3.eth.accounts[0];
+      web3.eth.defaultAccount = window.ethereum.selectedAddress;
     }
 
     return {
@@ -43,6 +43,7 @@ export default class Blockchain {
         }
       } catch (err) {
         reject(err);
+        return err;
       }
     });
   }

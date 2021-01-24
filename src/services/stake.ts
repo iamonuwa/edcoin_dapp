@@ -24,11 +24,7 @@ export default class EdcoinStakingContract extends Blockchain {
 
   async stake(account: string, amount: string) {
     let contract = await this.contract;
-    try {
-      return await contract.methods.stake(amount).send({ from: account });
-    } catch (err) {
-      return err;
-    }
+    return await contract.methods.stake(amount).send({ from: account });
   }
 
   async registerAndStake(
@@ -40,37 +36,23 @@ export default class EdcoinStakingContract extends Blockchain {
     referralAddress = referralAddress
       ? referralAddress
       : '0x0000000000000000000000000000000000000000';
-    try {
-      let registerAndStakeTx = await contract.methods
-        .registerAndStake(amount.toString(), referralAddress)
-        .send({ from: account });
+    let registerAndStakeTx = await contract.methods
+      .registerAndStake(amount.toString(), referralAddress)
+      .send({ from: account });
 
-      return registerAndStakeTx;
-    } catch (err) {
-      console.log('Stake registerAndStake error ', err);
-      return err;
-    }
+    return registerAndStakeTx;
   }
 
   async unstake(account: string, amount: string) {
     let contract = await this.contract;
-    try {
-      return await contract.methods
-        .unstake(amount.toString())
-        .send({ from: account });
-    } catch (err) {
-      console.log('Error ', err);
-      return err;
-    }
+    return await contract.methods
+      .unstake(amount.toString())
+      .send({ from: account });
   }
 
   async withdraw(account: string | null | undefined) {
     let contract = await this.contract;
-    try {
-      return await contract.methods.withdrawEarnings().send({ from: account });
-    } catch (err) {
-      return err;
-    }
+    return await contract.methods.withdrawEarnings().send({ from: account });
   }
 
   async reinvest(account: string, amount: string) {
@@ -84,49 +66,30 @@ export default class EdcoinStakingContract extends Blockchain {
 
   async getTotalStaked() {
     let contract = await this.contract;
-    try {
-      let totalStaked = await contract.methods.totalStaked().call();
-      return parseFloat(fromWei(totalStaked.toString())).toFixed(4);
-    } catch (err) {
-      return err;
-    }
+    let totalStaked = await contract.methods.totalStaked().call();
+    return parseFloat(fromWei(totalStaked.toString())).toFixed(4);
   }
 
   async checkIfRegistered(account: string | undefined | null) {
     let contract = await this.contract;
-    try {
-      return await contract.methods.registered(account).call();
-    } catch (err) {
-      return err;
-    }
+    return await contract.methods.registered(account).call();
   }
   async countStakes(account: string) {
     let contract = await this.contract;
-    try {
-      let totalStakes = await contract.methods.stakes(account).call();
-      return parseFloat(fromWei(totalStakes.toString())).toFixed(4);
-    } catch (err) {
-      return err;
-    }
+    let totalStakes = await contract.methods.stakes(account).call();
+    return parseFloat(fromWei(totalStakes.toString())).toFixed(4);
   }
 
   async getReferrals(account: string) {
     let contract = await this.contract;
-    try {
-      let totalReferrals = await contract.methods.referralCount(account).call();
-      return totalReferrals.toString();
-    } catch (err) {
-      return err;
-    }
+    let totalReferrals = await contract.methods.referralCount(account).call();
+    return totalReferrals.toString();
   }
 
   async computeEarnings(account: string) {
     let contract = await this.contract;
-    try {
-      let earnings = await contract.methods.calculateEarnings(account).call();
-      return parseFloat(fromWei(earnings.toString())).toFixed(4);
-    } catch (err) {
-      return err;
-    }
+    let earnings = await contract.methods.calculateEarnings(account).call();
+    console.log('Earnings ', earnings);
+    return parseFloat(fromWei(earnings.toString())).toFixed(4);
   }
 }

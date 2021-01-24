@@ -1,13 +1,9 @@
 import {
-  Box,
   Button,
   Flex,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
-  Input,
-  Text,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,15 +11,21 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  NumberInput,
+  NumberInputField,
+  Text,
+  useToast,
 } from '@chakra-ui/react';
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import EdcoinStakingContract from 'services/stake';
 import { toBN, toWei } from 'utils/convert';
 
 type Props = {
   balance: number | string;
-  account: string | null | undefined;
+  account: string | undefined | null;
 };
+
 const UnstakeModal = ({
   isOpen,
   onClose,
@@ -33,36 +35,51 @@ const UnstakeModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  amount: string | number;
+  amount: string;
   account: string | undefined | null;
   balance: string | number;
 }) => {
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const submitToBlockchain = async () => {
     const edcoinStakingContract = new EdcoinStakingContract();
-
-    const min = 1;
+    setIsLoading(true);
     const requestBN = toBN(toWei(amount.toString() || '0'));
-    if (requestBN.lt(toBN(toWei(min.toString())))) {
-      alert(
-        'Must send at least ' +
-          min.toString() +
-          ' Edcoin to stake and register.'
-      );
-      return;
-    }
-    if (requestBN.gt(toBN(toWei(balance.toString())))) {
-      alert('Cannot stake more Edcoin than is in your account.');
-      return;
-    }
+    try {
+      if (requestBN.gt(toBN(toWei(balance.toString())))) {
+        toast({
+          title: 'Insufficient Staked EDC balance',
+          description: 'Cannot unstake more Edcoin than is in your account.',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
 
-    console.log('Account ', account);
-
-    if (account) {
-      console.log('Stake submitToBlockchain...');
-      await edcoinStakingContract.unstake(account, requestBN.toString());
-      // alert(
-      //   'Stake request sent. Check your wallet to see when it has completed, then refresh this page.'
-      // );
+      if (account) {
+        await edcoinStakingContract.unstake(account, requestBN.toString());
+        toast({
+          title: 'Unstake request sent',
+          description:
+            'Check your wallet to see when it has completed, then refresh this page.',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
+        setIsLoading(false);
+        onClose();
+      }
+    } catch (error) {
+      toast({
+        title: 'Wallet error',
+        description: error.message,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+      setIsLoading(false);
       onClose();
     }
   };
@@ -71,18 +88,22 @@ const UnstakeModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalHeader>Confirm unstake</ModalHeader>
+        <ModalHeader>Confirm stake</ModalHeader>
         <ModalBody>
           <Flex justify="space-between">
-            <Text mb="1rem">You are about to unstake</Text>
+            <Text mb="1rem">You are about to stake</Text>
             <Text mb="1rem" fontWeight="bold">
               {amount} EDC
             </Text>
           </Flex>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={() => submitToBlockchain()} variant="ghost">
-            Continue
+          <Button
+            isLoading={isLoading}
+            onClick={() => submitToBlockchain()}
+            variant="ghost"
+          >
+            Proceed
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -91,96 +112,73 @@ const UnstakeModal = ({
 };
 
 export const Unstake = ({ balance, account }: Props) => {
-  const [totalBalance, setTotalBalance] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const { errors, handleSubmit, control } = useForm({
+    mode: 'all',
+  });
+
+  const [totalBalance, setTotalBalance] = useState<string>('0.00');
 
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
-  const computeUnstakeAmount = useCallback((value: number) => {
-    let amount: number = value * totalBalance;
-    setTotalBalance(amount);
-  }, []);
-
-  const handleAmountChange = (amount: number) => {
-    if (amount > balance) {
-      setErrorMessage('Insufficient balance');
-    } else {
-      setTotalBalance(amount);
+  const onUnstakeSubmit = async (data: any) => {
+    setTotalBalance(data.unstake);
+    if (Number(data.unstake) > 0) {
+      setConfirmModal(true);
     }
   };
 
-  const handleUnstakeForm = useCallback(() => {
-    setConfirmModal(true);
-  }, []);
+  const checkBalance = (value: string) => {
+    if (Number(value) <= balance) {
+      return true;
+    } else {
+      return 'Unstake amount cannot exceed current EDC balance';
+    }
+  };
 
+  console.log('Current balance ', balance);
   return (
     <Fragment>
-      <form>
-        <FormControl id="amount">
+      <form onSubmit={handleSubmit(onUnstakeSubmit)}>
+        <FormControl id="unstake" isInvalid={errors.unstake}>
           <Flex justifyContent="space-between">
-            <FormLabel>Stake amount</FormLabel>
+            <FormLabel>Unstake amount</FormLabel>
             <Text color="grey" fontSize="sm">
-              Wallet Balance: {balance} EDC
+              Staked balance: {balance} EDC
             </Text>
           </Flex>
-          <Input
-            type="number"
-            id="amount"
-            value={totalBalance}
-            onChange={(e) => handleAmountChange(Number(e.target.value))}
+          <Controller
+            control={control}
+            name="unstake"
+            rules={{
+              validate: checkBalance,
+              required: { value: true, message: 'Unstake amount is required' },
+            }}
+            render={({ onChange, onBlur, value, name, ref }) => (
+              <NumberInput
+                name={name}
+                ref={ref}
+                onBlur={onBlur}
+                variant="outline"
+                value={value}
+                onChange={onChange}
+                placeholder="Enter amount of EDC you wish to stake"
+              >
+                <NumberInputField />
+              </NumberInput>
+            )}
           />
-          <FormHelperText>
-            Enter amount of EDC you wish to unstake
-          </FormHelperText>
-          <FormErrorMessage>{errorMessage}</FormErrorMessage>
+          <FormErrorMessage>
+            {errors.unstake && errors.unstake.message}
+          </FormErrorMessage>
         </FormControl>
-
-        <Box my={4}>
-          <Flex>
-            <Box
-              borderRadius={30}
-              py={2}
-              px={4}
-              bgColor="steelblue"
-              cursor="pointer"
-              onClick={() => computeUnstakeAmount(0.25)}
-            >
-              25%
-            </Box>
-            <Box
-              borderRadius={30}
-              py={2}
-              px={4}
-              bgColor="steelblue"
-              cursor="pointer"
-              onClick={() => computeUnstakeAmount(0.5)}
-            >
-              50%
-            </Box>
-            <Box
-              borderRadius={30}
-              py={2}
-              px={4}
-              bgColor="steelblue"
-              cursor="pointer"
-              onClick={() => computeUnstakeAmount(0.75)}
-            >
-              75%
-            </Box>
-            <Box
-              borderRadius={30}
-              py={2}
-              px={4}
-              bgColor="steelblue"
-              cursor="pointer"
-              onClick={() => computeUnstakeAmount(1)}
-            >
-              100%
-            </Box>
-          </Flex>
-        </Box>
-        <Button my={4} onClick={handleUnstakeForm} colorScheme="teal" size="md">
-          Unstake
+        <Button
+          disabled={!account || errors.unstake}
+          my={4}
+          type="submit"
+          colorScheme="teal"
+          size="md"
+        >
+          Unstake EDC
         </Button>
       </form>
       <UnstakeModal

@@ -15,13 +15,14 @@ import {
 } from '@chakra-ui/react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
-import { shortenAddress } from 'utils';
+import { getExplorerLink, shortenAddress } from 'utils';
 import { SUPPORTED_WALLETS } from 'constant';
 import { isMobile } from 'react-device-detect';
 import { Option } from 'components/Wallet/Option';
-import { injected } from 'connectors';
+import { injected, walletlink } from 'connectors';
 import { Pending } from 'components/Wallet/Pending';
 import usePrevious from 'hooks/usePrevious';
+import { useEagerConnect, useInactiveListener } from 'hooks/useWeb3';
 
 type Props = {
   isOpen: boolean;
@@ -37,15 +38,40 @@ const WALLET_VIEWS = {
 };
 
 export const WalletModal = ({ isOpen, onClose }: Props) => {
-  const { onCopy } = useClipboard('');
-  const { account, connector, activate, error, active } = useWeb3React();
+  const {
+    account,
+    connector,
+    chainId,
+    activate,
+    error,
+    active,
+  } = useWeb3React();
+  const { onCopy } = useClipboard(account as string);
   const [walletView, setWalletView] = useState<string>(WALLET_VIEWS.ACCOUNT);
   const [pendingWallet, setPendingWallet] = useState<
     AbstractConnector | undefined
   >();
   const [pendingError, setPendingError] = useState<boolean>();
+  const [activatingConnector, setActivatingConnector] = useState<any>();
+
+  const [explorerLink, setExplorerLink] = useState('');
 
   const previousAccount = usePrevious(account);
+
+  useEffect(() => {
+    const loadNetworkURL = async () => {
+      if (account) {
+        setExplorerLink(await getExplorerLink(chainId, account));
+      }
+    };
+    loadNetworkURL();
+  }, [account]);
+
+  useEffect(() => {
+    if (activatingConnector && activatingConnector === connector) {
+      setActivatingConnector(undefined);
+    }
+  }, [activatingConnector, connector]);
 
   useEffect(() => {
     if (account && !previousAccount && isOpen) {
@@ -105,19 +131,41 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
       });
   };
 
+  function formatConnectorName() {
+    // @ts-ignore
+    const { ethereum } = window;
+    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const name: string = Object.keys(SUPPORTED_WALLETS)
+      .filter(
+        (k) =>
+          SUPPORTED_WALLETS[k].connector === connector &&
+          (connector !== injected || isMetaMask === (k === 'METAMASK'))
+      )
+      .map((k) => SUPPORTED_WALLETS[k].name)[0];
+    return (
+      <Text colorScheme="gray.100" fontSize="sm">
+        Connected with {name.toString()}
+      </Text>
+    );
+  }
+
+  const isTriedEager = useEagerConnect();
+  useInactiveListener(!isTriedEager || !!activatingConnector);
+
   const getOptions = () => {
     let isMetamask: boolean = false;
     if (typeof window !== 'undefined') {
       // @ts-ignore
-      isMetamask = 'ethereum' in window && window.ethereum.isMetaMask;
+      isMetamask = window?.ethereum?.isMetaMask;
     }
 
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
-      if (isMobile) {
-        if (typeof window !== 'undefined') {
+      // @ts-ignore
+      if (typeof window !== 'undefined') {
+        if (isMobile) {
           // @ts-ignore
-          if (!window.web3 && !window.ethereum && option.mobile) {
+          if (!window.ethereum && option.mobile) {
             return (
               <Option
                 onClick={() => {
@@ -137,12 +185,10 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
           }
           return null;
         }
-      }
-      if (option.connector === injected) {
-        // don't show injected if there's no injected provider
-        if (typeof window !== 'undefined') {
+        if (option.connector === injected) {
+          // don't show injected if there's no injected provider
           // @ts-ignore
-          if (!(window.web3 || window.ethereum)) {
+          if (!window.ethereum) {
             if (option.name === 'MetaMask') {
               return (
                 <Option
@@ -159,36 +205,36 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
               return null; //dont want to return install twice
             }
           }
+          // don't return metamask if injected provider isn't metamask
+          else if (option.name === 'MetaMask' && !isMetamask) {
+            return null;
+          }
+          // likewise for generic
+          else if (option.name === 'Injected' && isMetamask) {
+            return null;
+          }
         }
-        // don't return metamask if injected provider isn't metamask
-        else if (option.name === 'MetaMask' && !isMetamask) {
-          return null;
-        }
-        // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
-          return null;
-        }
+        return (
+          !isMobile &&
+          !option.mobileOnly && (
+            <Option
+              id={`connect-${key}`}
+              onClick={() => {
+                option.connector === connector
+                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                  : !option.href && tryActivation(option.connector);
+              }}
+              key={key}
+              active={option.connector === connector}
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null} //use option.description to bring back multi-line
+              // icon={require('../../assets/images/' + option.iconName)}
+            />
+          )
+        );
       }
-      return (
-        !isMobile &&
-        !option.mobileOnly && (
-          <Option
-            id={`connect-${key}`}
-            onClick={() => {
-              option.connector === connector
-                ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                : !option.href && tryActivation(option.connector);
-            }}
-            key={key}
-            active={option.connector === connector}
-            color={option.color}
-            link={option.href}
-            header={option.name}
-            subheader={null} //use option.descriptio to bring back multi-line
-            // icon={require('../../assets/images/' + option.iconName)}
-          />
-        )
-      );
     });
   };
 
@@ -203,44 +249,57 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
             <Box px={1} py={5} rounded={5} borderWidth={1}>
               <Box px={3}>
                 <Flex justify="space-between">
-                  <Flex direction="column">
-                    <Text colorScheme="gray.100" size="sm">
-                      Connected with Metamask
-                    </Text>
-                    {account && (
-                      <Text fontSize="2xl" fontWeight={600}>
-                        {shortenAddress(account)}
-                      </Text>
-                    )}
-                    <Flex pt={5} justify="flex-start">
-                      <Text
-                        onClick={onCopy}
-                        cursor="pointer"
-                        fontSize="sm"
-                        mr={[0, 0, 0, 3]}
-                      >
-                        Copy Address
-                      </Text>
-                      <Link
-                        isExternal
-                        href={`https://etherscan.io/address/${account}`}
-                        fontSize="sm"
-                        _hover={{
-                          textDecoration: 'none',
+                  {formatConnectorName()}
+                  <Flex>
+                    {connector !== injected && connector !== walletlink && (
+                      <Button
+                        size="xs"
+                        mr={3}
+                        outline="none"
+                        colorScheme="red"
+                        onClick={() => {
+                          (connector as any).close();
                         }}
                       >
-                        View on Etherscan
-                      </Link>
-                    </Flex>
+                        Disconnect
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleWalletChange}
+                      size="xs"
+                      outline="none"
+                      variant="outline"
+                    >
+                      Change
+                    </Button>
                   </Flex>
-                  <Button
-                    onClick={handleWalletChange}
-                    size="xs"
-                    outline="none"
-                    variant="outline"
-                  >
-                    Change
-                  </Button>
+                </Flex>
+                <Flex direction="column">
+                  {account && (
+                    <Text fontSize="2xl" fontWeight={600}>
+                      {shortenAddress(account)}
+                    </Text>
+                  )}
+                  <Flex pt={5} justify="flex-start">
+                    <Text
+                      onClick={() => onCopy()}
+                      cursor="pointer"
+                      fontSize="sm"
+                      mr={3}
+                    >
+                      Copy Address
+                    </Text>
+                    <Link
+                      isExternal
+                      href={explorerLink}
+                      fontSize="sm"
+                      _hover={{
+                        textDecoration: 'none',
+                      }}
+                    >
+                      View on Etherscan
+                    </Link>
+                  </Flex>
                 </Flex>
               </Box>
             </Box>

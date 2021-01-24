@@ -8,6 +8,7 @@ type Props = {
 };
 
 export const Reward = ({ account, amount }: Props) => {
+  console.log('Amount ', amount);
   const handleReward = useCallback(async () => {
     const edcoinStakingContract = new EdcoinStakingContract();
     if (Number(amount) > 0) {
@@ -26,11 +27,16 @@ export const Reward = ({ account, amount }: Props) => {
         justifyContent="center"
       >
         <Text textAlign="center" fontSize="3xl">
-          {amount}
+          {amount} EDC
         </Text>
         <Text>Pending Rewards</Text>
       </Box>
-      <Button size="sm" variant="outline" onClick={handleReward}>
+      <Button
+        disabled={!account}
+        size="sm"
+        variant="outline"
+        onClick={handleReward}
+      >
         Claim Reward
       </Button>
     </Flex>
