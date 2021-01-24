@@ -41,7 +41,7 @@ const StakeFeatures = ({ ...rest }: FlexProps) => {
     <Flex wrap="nowrap" mt={12} {...rest}>
       <Stack
         spacing={4}
-        w={{ base: '90vw', md: '90vw', lg: '100vw' }}
+        w={{ base: '100vw', md: '90vw', lg: '100vw' }}
         align={['flex-start', 'flex-start', 'flex-start', 'center']}
       >
         <Tabs isFitted width={{ base: '100vw', md: '60vw' }} outline="none">

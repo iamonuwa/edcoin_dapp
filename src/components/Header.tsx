@@ -29,9 +29,14 @@ const NavBar = (props: FlexProps) => {
 
   return (
     <NavBarContainer {...props}>
-      <Logo w="100px" color={color[colorMode]} />
+      <Flex align="center">
+        <Logo color={color[colorMode]} />
+        <Box mx={3}>
+          <DarkModeSwitch />
+        </Box>
+      </Flex>
       <MenuToggle color={color[colorMode]} toggle={toggle} isOpen={isOpen} />
-      <MenuLinks isOpen={isOpen} />
+      <MenuLinks isOpen={isOpen} />{' '}
       <MenuCTA
         isOpen={isOpen}
         textColor={textColor[colorMode]}
@@ -209,7 +214,6 @@ const MenuCTA = ({
                 {shortenAddress(account)}
               </Text>
             </Box>
-            <DarkModeSwitch />
           </Stack>
         ) : (
           <Stack
@@ -232,7 +236,6 @@ const MenuCTA = ({
             >
               Connect wallet
             </Button>
-            <DarkModeSwitch />
           </Stack>
         )}
       </Box>
