@@ -175,7 +175,7 @@ export const Unstake = ({ balance, account }: Props) => {
           disabled={!account || errors.unstake}
           my={4}
           type="submit"
-          colorScheme="teal"
+          variant="outline"
           size="md"
         >
           Unstake EDC

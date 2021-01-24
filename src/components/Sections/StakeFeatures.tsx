@@ -46,9 +46,9 @@ const StakeFeatures = ({ ...rest }: FlexProps) => {
       >
         <Tabs isFitted width={{ base: '100vw', md: '87vw' }} outline="none">
           <TabList>
-            <Tab>Stake</Tab>
-            <Tab>Unstake</Tab>
-            <Tab>Rewards</Tab>
+            <Tab _selected={{ borderBottomColor: '#28ca2a' }}>Stake</Tab>
+            <Tab _selected={{ borderBottomColor: '#28ca2a' }}>Unstake</Tab>
+            <Tab _selected={{ borderBottomColor: '#28ca2a' }}>Rewards</Tab>
           </TabList>
           <TabPanels outline="none">
             <TabPanel id="1">

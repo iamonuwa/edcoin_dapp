@@ -92,14 +92,16 @@ const MenuItem = ({
   children,
   isLast,
   to = '/',
+  isExternal,
   ...rest
 }: {
   children: React.ReactNode;
   to: string;
+  isExternal?: boolean;
   isLast?: boolean;
 }) => {
   return (
-    <Link href={to}>
+    <Link isExternal={isExternal ? true : false} href={to}>
       <Text display="block" {...rest}>
         {children}
       </Text>
@@ -121,9 +123,18 @@ const MenuLinks = ({ isOpen }: { isOpen: boolean }) => {
         pt={[4, 4, 0, 0]}
       >
         <MenuItem to="/">Stake</MenuItem>
-        <MenuItem to="#">About</MenuItem>
-        <MenuItem to="#">FAQ</MenuItem>
-        <MenuItem to="#">Buy Edcoin →</MenuItem>
+        <MenuItem isExternal to="https://www.ed-coin.io/about-us/">
+          About
+        </MenuItem>
+        <MenuItem isExternal to="https://www.ed-coin.io/#tokenomics">
+          FAQ
+        </MenuItem>
+        <MenuItem
+          isExternal
+          to="https://www.dextools.io/app/uniswap/pair-explorer/0x7acf849214ee36fd4b0a9ebcb2c976667105d887"
+        >
+          Buy Edcoin →
+        </MenuItem>
       </Stack>
     </Box>
   );
@@ -184,7 +195,7 @@ const MenuCTA = ({
               cursor="pointer"
               rounded={5}
               py={1}
-              bgGradient="linear(to-l, #7928CA, #FF0080)"
+              bgGradient="linear(to-l, #ffb100, #28ca2a)"
               px={4}
             >
               <Text color={textColor} fontWeight={600}>

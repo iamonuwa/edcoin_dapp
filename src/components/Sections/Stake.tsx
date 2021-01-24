@@ -213,7 +213,7 @@ export const Stake = ({ balance, account }: Props) => {
           disabled={!account || errors.stake}
           my={4}
           type="submit"
-          colorScheme="teal"
+          variant="outline"
           size="md"
         >
           Stake

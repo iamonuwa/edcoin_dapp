@@ -77,7 +77,7 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
             minWidth={300}
             height={150}
             color="white"
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgGradient="linear(to-l, #28ca2a, #ffb100)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
@@ -100,7 +100,7 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
             height={150}
             minWidth={300}
             color="white"
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgGradient="linear(to-l, #ffb100, #28ca2a)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
@@ -123,7 +123,7 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
             height={150}
             minWidth={300}
             color="white"
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgGradient="linear(to-l, #28ca2a, #ffb100)"
             flexBasis={['auto', '45%']}
           >
             <Text pt={8} px={8} pb={4} fontSize="lg">
@@ -140,35 +140,12 @@ export const StatsGrid = ({ ...rest }: FlexProps) => {
               Your staked Edcoin
             </Heading>
           </Box>
-          {/* <Box
-            m={{ base: 1, md: 4 }}
-            rounded="lg"
-            borderWidth={1}
-            height={150}
-            width={300}
-            color={color[colorMode]}
-            flexBasis={['auto', '45%']}
-          >
-            <Text pt={8} px={8} pb={4} fontSize="lg">
-              0
-            </Text>
-            <Heading
-              p={{ base: 0, md: 6 }}
-              textAlign={{ base: 'center', md: 'left' }}
-              as="h3"
-              size="sm"
-              mb="2"
-            >
-              Your Edcoin balance
-            </Heading>
-          </Box>
-           */}
           <Box
             m={{ base: 1, md: 4 }}
             rounded="lg"
             height={150}
             minWidth={300}
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgGradient="linear(to-l, #ffb100, #28ca2a)"
             color="white"
             flexBasis={['auto', '45%']}
           >
