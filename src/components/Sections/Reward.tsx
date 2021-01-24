@@ -16,11 +16,7 @@ export const Reward = ({ account, amount }: Props) => {
     }
   }, []);
   return (
-    <Flex
-      my={{ base: 0, md: 10 }}
-      alignItems="center"
-      justify={{ base: 'flex-start', md: 'center' }}
-    >
+    <Flex my={{ base: 0, md: 10 }} alignItems="center" justify="center">
       <Box
         mr={{ base: 0, md: 10 }}
         alignContent="center"

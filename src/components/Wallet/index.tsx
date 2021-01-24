@@ -37,7 +37,7 @@ const WALLET_VIEWS = {
   PENDING: 'pending',
 };
 
-export const WalletModal = ({ isOpen, onClose }: Props) => {
+const WalletModal = ({ isOpen, onClose }: Props) => {
   const {
     account,
     connector,
@@ -161,80 +161,80 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
 
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key];
-      // @ts-ignore
-      if (typeof window !== 'undefined') {
-        if (isMobile) {
-          // @ts-ignore
-          if (!window.ethereum && option.mobile) {
-            return (
-              <Option
-                onClick={() => {
-                  option.connector !== connector &&
-                    !option.href &&
-                    tryActivation(option.connector);
-                }}
-                id={`connect-${key}`}
-                key={key}
-                active={option.connector && option.connector === connector}
-                color={option.color}
-                link={option.href}
-                header={option.name}
-                subheader={null}
-              />
-            );
-          }
-          return null;
-        }
-        if (option.connector === injected) {
-          // don't show injected if there's no injected provider
-          // @ts-ignore
-          if (!window.ethereum) {
-            if (option.name === 'MetaMask') {
-              return (
-                <Option
-                  id={`connect-${key}`}
-                  key={key}
-                  color={'#E8831D'}
-                  header={'Install Metamask'}
-                  subheader={null}
-                  link={'https://metamask.io/'}
-                  // icon={require('../../assets/images/' + option.iconName)}
-                />
-              );
-            } else {
-              return null; //dont want to return install twice
-            }
-          }
-          // don't return metamask if injected provider isn't metamask
-          else if (option.name === 'MetaMask' && !isMetamask) {
-            return null;
-          }
-          // likewise for generic
-          else if (option.name === 'Injected' && isMetamask) {
-            return null;
-          }
-        }
-        return (
-          !isMobile &&
-          !option.mobileOnly && (
+
+      if (isMobile) {
+        // @ts-ignore
+        if (!window?.web3 && !window?.ethereum && option.mobile) {
+          return (
             <Option
-              id={`connect-${key}`}
               onClick={() => {
-                option.connector === connector
-                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                  : !option.href && tryActivation(option.connector);
+                option.connector !== connector &&
+                  !option.href &&
+                  tryActivation(option.connector);
               }}
+              id={`connect-${key}`}
               key={key}
-              active={option.connector === connector}
+              active={option.connector && option.connector === connector}
               color={option.color}
               link={option.href}
               header={option.name}
-              subheader={null} //use option.description to bring back multi-line
-              // icon={require('../../assets/images/' + option.iconName)}
+              subheader={null}
             />
-          )
-        );
+          );
+        }
+        return null;
       }
+
+      // overwrite injected when needed
+      if (option.connector === injected) {
+        // don't show injected if there's no injected provider
+        // @ts-ignore
+        if (!(window?.web3 || window?.ethereum)) {
+          if (option.name === 'MetaMask') {
+            return (
+              <Option
+                id={`connect-${key}`}
+                key={key}
+                color={'#E8831D'}
+                header={'Install Metamask'}
+                subheader={null}
+                link={'https://metamask.io/'}
+              />
+            );
+          } else {
+            return null; //dont want to return install twice
+          }
+        }
+        // don't return metamask if injected provider isn't metamask
+        else if (option.name === 'MetaMask' && !isMetamask) {
+          return null;
+        }
+        // likewise for generic
+        else if (option.name === 'Injected' && isMetamask) {
+          return null;
+        }
+      }
+
+      // return rest of options
+      return (
+        !isMobile &&
+        !option.mobileOnly && (
+          <Option
+            id={`connect-${key}`}
+            onClick={() => {
+              option.connector === connector
+                ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                : !option.href && tryActivation(option.connector);
+            }}
+            key={key}
+            active={option.connector === connector}
+            color={option.color}
+            link={option.href}
+            header={option.name}
+            subheader={null} //use option.descriptio to bring back multi-line
+          />
+        )
+      );
     });
   };
 
@@ -353,3 +353,5 @@ export const WalletModal = ({ isOpen, onClose }: Props) => {
     </Modal>
   );
 };
+
+export default WalletModal;

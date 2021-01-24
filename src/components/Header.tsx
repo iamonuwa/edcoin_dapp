@@ -14,7 +14,7 @@ import {
 import Logo from 'components/Logo';
 import { DarkModeSwitch } from 'components/DarkModeSwitch';
 import { useActiveWeb3React } from 'hooks/useWeb3';
-import { WalletModal } from 'components/Wallet';
+import WalletModal from 'components/Wallet';
 import { shortenAddress } from 'utils';
 import Edcoin from 'services/edcoin';
 

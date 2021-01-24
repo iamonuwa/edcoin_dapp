@@ -44,7 +44,7 @@ const StakeFeatures = ({ ...rest }: FlexProps) => {
         w={{ base: '100vw', md: '90vw', lg: '100vw' }}
         align={['flex-start', 'flex-start', 'flex-start', 'center']}
       >
-        <Tabs isFitted width={{ base: '100vw', md: '60vw' }} outline="none">
+        <Tabs isFitted width={{ base: '100vw', md: '87vw' }} outline="none">
           <TabList>
             <Tab>Stake</Tab>
             <Tab>Unstake</Tab>

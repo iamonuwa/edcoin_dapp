@@ -5,8 +5,10 @@ import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core';
 import { getLibrary } from 'utils';
 import { NetworkContextName } from 'constant';
 
-import Header from 'components/Header';
+const Header = dynamic(() => import('components/Header'), { ssr: false });
+
 import theme from 'theme';
+import dynamic from 'next/dynamic';
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
